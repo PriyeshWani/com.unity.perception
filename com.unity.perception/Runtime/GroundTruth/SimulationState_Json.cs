@@ -105,6 +105,7 @@ namespace UnityEngine.Perception.GroundTruth
                     WriteJObjectToFile(metricDefinitionsJObject, "metric_definitions.json");
                 }
             }
+            Debug.Log($"Dataset written to {OutputDirectory}");
         }
 
         void WriteJObjectToFile(JObject jObject, string filename)
@@ -187,11 +188,12 @@ namespace UnityEngine.Perception.GroundTruth
                     PendingCaptures = pendingCapturesToWrite,
                     SimulationState = this
                 };
-                req.Start(r =>
+                req.Enqueue(r =>
                 {
                     Write(r.data.PendingCaptures, r.data.SimulationState, r.data.CaptureFileIndex);
                     return AsyncRequest.Result.Completed;
                 });
+                req.Execute();
             }
 
             m_SerializeCapturesSampler.End();
@@ -255,11 +257,12 @@ namespace UnityEngine.Perception.GroundTruth
                     MetricFileIndex = m_MetricsFileIndex,
                     PendingMetrics = pendingMetricsToWrite
                 };
-                req.Start(r =>
+                req.Enqueue(r =>
                 {
                     Write(r.data.PendingMetrics, r.data.MetricFileIndex);
                     return AsyncRequest.Result.Completed;
                 });
+                req.Execute();
             }
 
             m_MetricsFileIndex++;

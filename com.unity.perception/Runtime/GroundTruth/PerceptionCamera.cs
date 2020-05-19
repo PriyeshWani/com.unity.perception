@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -583,7 +583,8 @@ namespace UnityEngine.Perception.GroundTruth
             //Based on logic in HDRenderPipeline.PrepareFinalBlitParameters
             return camera.targetTexture != null || hdAdditionalCameraData.flipYMode == HDAdditionalCameraData.FlipYMode.ForceFlipY || camera.cameraType == CameraType.Game;
 #elif URP_PRESENT
-            return SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11 && (camera.targetTexture != null || camera.cameraType == CameraType.Game);
+            return (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Direct3D11 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.Metal) &&
+                (camera.targetTexture != null || camera.cameraType == CameraType.Game);
 #else
             return false;
 #endif
@@ -594,7 +595,7 @@ namespace UnityEngine.Perception.GroundTruth
             using (s_FlipY.Auto())
             {
                 var stride = dataColorBuffer.Length / height;
-                var buffer = new NativeArray<byte>(stride, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+                var buffer = new NativeArray<byte>(stride, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
                 fixed(byte* colorBufferPtr = &dataColorBuffer[0])
                 {
                     var unsafePtr = (byte*)buffer.GetUnsafePtr();
@@ -687,7 +688,7 @@ namespace UnityEngine.Perception.GroundTruth
                 height = labelingTexture.height,
                 path = path
             };
-            asyncRequest.Start((r) =>
+            asyncRequest.Enqueue((r) =>
             {
                 Profiler.EndSample();
                 Profiler.BeginSample("Encode");
@@ -699,6 +700,7 @@ namespace UnityEngine.Perception.GroundTruth
                 Profiler.EndSample();
                 return AsyncRequest.Result.Completed;
             });
+            asyncRequest.Execute();
         }
     }
 }
