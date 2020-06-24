@@ -49,6 +49,10 @@ namespace UnityEngine.Perception.GroundTruth
         /// </summary>
         public bool captureRgbImages = true;
         /// <summary>
+        /// Whether to use batch readback for rgb images
+        /// </summary>
+        public bool useBatchReadback = true;
+        /// <summary>
         /// Whether semantic segmentation images should be generated
         /// </summary>
         public bool produceSegmentationImages = true;
@@ -551,6 +555,12 @@ namespace UnityEngine.Perception.GroundTruth
             var height = cam.pixelHeight;
             var flipY = ShouldFlipY(cam);
 
+            if (useBatchReadback)
+            {
+                CaptureOptions.useBatchReadback = true;
+                BatchReadback.Instance().BatchSize = 50;
+            }
+
             colorFunctor = r =>
             {
                 using (s_WriteFrame.Auto())
@@ -595,7 +605,7 @@ namespace UnityEngine.Perception.GroundTruth
             using (s_FlipY.Auto())
             {
                 var stride = dataColorBuffer.Length / height;
-                var buffer = new NativeArray<byte>(stride, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+                var buffer = new NativeArray<byte>(stride, Allocator.Temp, NativeArrayOptions.UninitializedMemory);
                 fixed(byte* colorBufferPtr = &dataColorBuffer[0])
                 {
                     var unsafePtr = (byte*)buffer.GetUnsafePtr();
@@ -690,7 +700,6 @@ namespace UnityEngine.Perception.GroundTruth
             };
             asyncRequest.Start((r) =>
             {
-                Profiler.EndSample();
                 Profiler.BeginSample("Encode");
                 var pngBytes = ImageConversion.EncodeArrayToPNG(r.data.dataArray, GraphicsFormat.R8G8B8A8_UNorm, (uint)r.data.width, (uint)r.data.height);
                 Profiler.EndSample();
