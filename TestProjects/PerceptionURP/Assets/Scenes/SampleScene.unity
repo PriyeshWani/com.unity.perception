@@ -519,6 +519,7 @@ GameObject:
   - component: {fileID: 963194229}
   - component: {fileID: 963194227}
   - component: {fileID: 963194231}
+  - component: {fileID: 963194232}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -638,12 +639,13 @@ MonoBehaviour:
   period: 0.0166
   startTime: 0
   captureRgbImages: 1
-  produceSegmentationImages: 1
-  produceObjectCountAnnotations: 1
+  useBatchReadback: 1
+  produceSegmentationImages: 0
+  produceObjectCountAnnotations: 0
   objectCountId: 51DA3C27-369D-4929-AEA6-D01614635CE2
-  produceBoundingBoxAnnotations: 1
+  produceBoundingBoxAnnotations: 0
   boundingBoxId: F9F22E05-443F-4602-A422-EBE4EA9B55CB
-  produceRenderedObjectInfoMetric: 1
+  produceRenderedObjectInfoMetric: 0
   renderedObjectInfoId: 5BA92024-B3B7-41A7-9D3F-C03A6A8DDD01
   boundingBoxOrigin: 0
   LabelingConfiguration: {fileID: 11400000, guid: e74234fe725079e4aa7ecd74797ceb79,
@@ -662,6 +664,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   light: {fileID: 705507993}
   target: {fileID: 1640252278}
+--- !u!114 &963194232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b153d8beebb47a04d89f61e99849523b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalFrames: 2000
 --- !u!1 &1640252278
 GameObject:
   m_ObjectHideFlags: 0
